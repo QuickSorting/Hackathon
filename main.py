@@ -1,6 +1,6 @@
 import sys
 from repo_analyzer import RepoAnalyzer
-from diagram_parser import DiagramParser
+from output_reformatter import OutputReformatter
 
 
 if __name__ == '__main__':
@@ -12,7 +12,6 @@ if __name__ == '__main__':
     analyzer = RepoAnalyzer(repo_path)
 
     analysis, class_definitions = analyzer.analyze_repository()
-    diagram = analyzer.generate_mermaid(analysis)
 
-    diagram_parser = DiagramParser(diagram)
-    diagram_parser.to_json("formatted_diagram.json")
+    diagram_parser = OutputReformatter(analysis)
+    diagram_parser.to_json("formatted_output.json")
