@@ -64,9 +64,9 @@ if __name__ == "__main__":
 
     from repo_analyzer import RepoAnalyzer
     analyzer = RepoAnalyzer("./")
-    analysis, class_definitions = analyzer.analyze_repository()
+    class_dependencies = analyzer.analyze_repository()
 
-    print(analysis)
+    print(class_dependencies)
     exit(0)
 
     class_descriptions = client.generate_class_descriptions(class_definitions)
