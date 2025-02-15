@@ -25,16 +25,28 @@ class OpenAIChatClient:
             return f"An error occurred: {str(e)}"
 
     def generate_class_description(self, source):
-        print(source)
-        template = """
+        template_long = """
         You are an expert software engineer and technical writer. Below is the code for a class from a software repository written in Python. Please provide a detailed description of this class in the following format:
 
         **Purpose:** What is the main responsibility of this class? (I want just a single paragraph)
 
         [Insert class code here]
         """
-        prompt = template.replace("[Insert class code here]", source)
-        return self.get_completion(prompt)
+        prompt = template_long.replace("[Insert class code here]", source)
+        long = self.get_completion(prompt)
+
+        if long is None:
+            return ("", "")
+
+        template_short = """
+        Can you summarize this in one sentence
+        [Insert string here]
+        """
+
+        prompt = template_short.replace("[Insert string here]", long)
+        short = self.get_completion(prompt)
+
+        return (short, long)
 
 if __name__ == "__main__":
     file_path = './key'
