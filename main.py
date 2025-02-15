@@ -1,6 +1,7 @@
 import sys
 from repo_analyzer import RepoParser
 from output_reformatter import OutputReformatter
+from meta_descriptor import MetaDescriptionGenerator
 
 class Main:
     def main(self):
@@ -11,6 +12,9 @@ class Main:
         diagram_parser = OutputReformatter(classes)
         diagram_parser.generate_structure()
         diagram_parser.save_to_json("formatted_output.json")
+
+        meta_description_generation = MetaDescriptionGenerator()
+        meta_description_generation.save('meta_description.txt')
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
