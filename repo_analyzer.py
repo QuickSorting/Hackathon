@@ -30,7 +30,6 @@ class RepoParser:
         for cls, deps in self.class_dependencies.items():
             classes[cls] = (client.generate_class_description(self.class_source_code[cls]), list(deps))
 
-        # print(classes)
         return classes
 
 

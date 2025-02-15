@@ -3,37 +3,43 @@
         {
             "id": "1",
             "label": "RepoParser",
-            "additionalInfo": "**Purpose:** The `RepoParser` class is designed to analyze a Python repository by identifying class dependencies and mapping function names to their respective classes. It accomplishes this by traversing the directory structure of the specified repository, effectively ignoring paths defined in the `.gitignore` file, and parsing Python files to extract class and function relationships. Ultimately, it leverages an external OpenAI API client to generate descriptions of the identified classes and their dependencies, providing insights into the structure and interconnections within the codebase.",
+            "additionalInfoLong": "**Purpose:** The `RepoParser` class is responsible for analyzing a Python software repository by parsing its files to establish relationships among classes and their dependencies. It uses the `.gitignore` file to filter out paths that should be ignored during the analysis, collects mappings of functions to their respective classes, and detects dependencies between classes based on method calls. In addition, it generates descriptions for each class by utilizing an external API, enabling an integrated and structured understanding of the codebase.",
+            "additionalInfoShort": "RepoParser analyzes Python repositories to establish class relationships.",
             "hidden": false
         },
         {
             "id": "2",
             "label": "ClassFunctionVisitor",
-            "additionalInfo": "**Purpose:** The `ClassFunctionVisitor` class is an AST (Abstract Syntax Tree) visitor designed to traverse Python class definitions in source code. Its primary responsibility is to create a mapping of method names to their defining class names, collecting this information while also storing the source code for each class. It assumes function names across classes are unique and allows for analyzing the structure and organization of classes within Python code for purposes such as code analysis, documentation generation, or static code checking.",
+            "additionalInfoLong": "**Purpose:** The `ClassFunctionVisitor` is a custom AST (Abstract Syntax Tree) node visitor that traverses Python class definitions in source code. Its primary responsibility is to collect information about the methods defined within each class, creating a mapping from method names to their respective class names. This visitor assumes that function names are unique across all classes, allowing it to effectively track which methods belong to which classes while also storing the source code of each class for further analysis or documentation purposes.",
+            "additionalInfoShort": "ClassFunctionVisitor maps methods to classes in Python source code.",
             "hidden": false
         },
         {
             "id": "3",
             "label": "DependencyVisitor",
-            "additionalInfo": "**Purpose:** The `DependencyVisitor` class is responsible for analyzing the abstract syntax tree (AST) of Python code to identify and record the dependencies between classes based on function calls made within class methods. It operates as a second-pass visitor that builds a mapping of classes to their respective dependencies by examining function call constructs and comparing them to a predefined mapping of functions to classes obtained from an initial scan of the code. This functionality enables better understanding of inter-class relationships and dependencies in the codebase, which can be useful for refactoring, code analysis, or dependency management tasks.",
+            "additionalInfoLong": "**Purpose:** The `DependencyVisitor` class is designed to analyze the structure of Python code, specifically focusing on class methods, to determine dependencies between classes based on function calls. It operates as a second-pass visitor in an abstract syntax tree (AST) traversal, utilizing a mapping of function names to their corresponding classes obtained from a prior analysis. By inspecting `Call` nodes in the AST, the class identifies which classes are dependent on others based on the function calls made within the methods of the currently processed class, thereby building a comprehensive record of inter-class dependencies.",
+            "additionalInfoShort": "The `DependencyVisitor` analyzes class method dependencies in Python code.",
             "hidden": false
         },
         {
             "id": "4",
             "label": "OpenAIChatClient",
-            "additionalInfo": "**Purpose:** The `OpenAIChatClient` class is designed to facilitate interactions with the OpenAI API by providing methods for sending user inputs and receiving chat completions. It encapsulates the initialization of the OpenAI client with an API key and offers a straightforward interface to request chat-based responses, handling potential errors during the process to ensure robustness. Additionally, it includes a method to generate class descriptions based on provided code, leveraging the OpenAI model to provide structured feedback.",
+            "additionalInfoLong": "**Purpose:** The `OpenAIChatClient` class is designed to facilitate interaction with the OpenAI API to generate chat-based completions. It initializes with an API key to create a client instance, sends user inputs to the API to retrieve responses generated by a specified model (in this case, 'gpt-4o-mini'), and handles any potential errors during the API request process, returning the results as strings for further use.",
+            "additionalInfoShort": "The OpenAIChatClient class connects users to OpenAI's chat API.",
             "hidden": false
         },
         {
             "id": "5",
             "label": "Main",
-            "additionalInfo": "**Purpose:** The `Main` class is responsible for orchestrating the process of parsing a software repository to analyze its class dependencies, reformatting the parsed class structure, and saving the output in a structured JSON format. It achieves this by initializing a `RepoParser` to construct the dependencies of classes found within a specified directory, utilizing an `OutputReformatter` to reorganize this class information, and ultimately exporting the reformatted structure to a file named 'formatted_output.json'.",
+            "additionalInfoLong": "**Purpose:** The `Main` class serves as the entry point for a program that analyzes class dependencies in a software repository. It utilizes a `RepoParser` instance to read and construct dependency information about classes in a specified directory, then formats this data using an `OutputReformatter` instance. The class processes the dependencies, generates a structured representation of them, and saves the result as a JSON file named 'formatted_output.json', effectively enabling users to visualize and work with class relationships within their codebase.",
+            "additionalInfoShort": "Main class analyzes class dependencies and outputs JSON file.",
             "hidden": false
         },
         {
             "id": "6",
             "label": "OutputReformatter",
-            "additionalInfo": "**Purpose:** The `OutputReformatter` class is designed to process a dictionary that represents a collection of classes, including their descriptions and dependencies, and generate a structured representation of this data in the form of nodes and edges. This structure facilitates visualization or further processing by clearly defining relationships between classes, where each class is a node with associated details and dependencies are represented as edges connecting these nodes. Additionally, the class includes functionality to save this structured data to a JSON file for easy persistence and sharing.",
+            "additionalInfoLong": "**Purpose:** The `OutputReformatter` class is designed to reformat and organize class-related data into a structured format suitable for graph representation, specifically focusing on classes and their dependencies. It takes an input dictionary that maps class names to their descriptions and dependencies, processes this information to create a list of nodes and edges that represent the relationships between classes, and provides methods to output this structured data and save it to a JSON file for further use, such as visualization or analysis.",
+            "additionalInfoShort": "OutputReformatter organizes class data for graph representation and analysis.",
             "hidden": false
         }
     ],

@@ -17,13 +17,14 @@ class OutputReformatter:
 
         print(self.class_dict.items())
         # Create nodes
-        for class_name, (description, _) in self.class_dict.items():
+        for class_name, ((short, long), _) in self.class_dict.items():
             node_id = str(counter)
             self.node_ids[class_name] = node_id  # Store ID mapping
             self.nodes.append({
                 "id": node_id,
                 "label": class_name,
-                "additionalInfo": description,
+                "additionalInfoLong": long,
+                "additionalInfoShort": short,
                 "hidden": False
             })
             counter += 1
