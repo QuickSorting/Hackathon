@@ -15,6 +15,7 @@ class OutputReformatter:
         """Generates the nodes and edges structure."""
         counter = 1
 
+        print(self.class_dict.items())
         # Create nodes
         for class_name, (description, _) in self.class_dict.items():
             node_id = str(counter)
@@ -52,20 +53,20 @@ class OutputReformatter:
         print(f"JSON saved as {filename}")
 
 # Example usage:
-if __name__ == "__main__":
-    class_dict = {
-        'ClassA': ['This is Class A', ['ClassB', 'ClassC']],
-        'ClassB': ['This is Class B', ['ClassD']],
-        'ClassC': ['This is Class C', []],
-        'ClassD': ['This is Class D', []]
-    }
-
-    reformatter = OutputReformatter(class_dict)
-    reformatter.generate_structure()
-    output = reformatter.get_output()
-    
-    # Print the output
-    print(json.dumps(output, indent=4))
-
-    # Save to JSON
-    reformatter.save_to_json("formatted_output.json")
+# if __name__ == "__main__":
+#     class_dict = {
+#         'ClassA': ['This is Class A', ['ClassB', 'ClassC']],
+#         'ClassB': ['This is Class B', ['ClassD']],
+#         'ClassC': ['This is Class C', []],
+#         'ClassD': ['This is Class D', []]
+#     }
+#
+#     reformatter = OutputReformatter(class_dict)
+#     reformatter.generate_structure()
+#     output = reformatter.get_output()
+#
+#     # Print the output
+#     print(json.dumps(output, indent=4))
+#
+#     # Save to JSON
+#     reformatter.save_to_json("formatted_output.json")

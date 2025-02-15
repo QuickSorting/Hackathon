@@ -1,0 +1,160 @@
+here
+RepoParser
+load_gitignore_prefixes
+here1
+RepoParser
+here
+RepoParser
+parse
+here1
+RepoParser
+here
+RepoParser
+strip
+here
+RepoParser
+startswith
+here
+RepoParser
+append
+here
+RepoParser
+startswith
+here
+RepoParser
+walk
+here
+RepoParser
+should_ignore
+here1
+RepoParser
+here
+RepoParser
+endswith
+here
+RepoParser
+should_ignore
+here1
+RepoParser
+here
+RepoParser
+get_py_files
+here1
+RepoParser
+here
+RepoParser
+parse_functions
+here1
+RepoParser
+here
+RepoParser
+get_py_files
+here1
+RepoParser
+here
+RepoParser
+analyze_dependencies
+here1
+RepoParser
+here
+RepoParser
+items
+here
+RepoParser
+read
+here
+RepoParser
+parse
+here1
+RepoParser
+here
+RepoParser
+visit
+here
+RepoParser
+read
+here
+RepoParser
+parse
+here1
+RepoParser
+here
+RepoParser
+visit
+here
+ClassFunctionVisitor
+generic_visit
+here
+DependencyVisitor
+generic_visit
+here
+DependencyVisitor
+generic_visit
+here
+OpenAIChatClient
+OpenAI
+here
+OpenAIChatClient
+items
+here
+OpenAIChatClient
+replace
+here
+OpenAIChatClient
+get_completion
+here1
+OpenAIChatClient
+here
+OpenAIChatClient
+analyze_repository
+here
+OpenAIChatClient
+read
+here
+OpenAIChatClient
+analyze_repository
+here
+OpenAIChatClient
+generate_class_descriptions
+here1
+OpenAIChatClient
+here
+Main
+construct_class_dependencies
+here1
+RepoParser
+here2
+here
+Main
+to_json
+here
+Main
+exit
+here
+OutputReformatter
+dump
+here
+OutputReformatter
+get_output
+here1
+OutputReformatter
+Function to Class Mapping:
+__init__ -> OutputReformatter
+construct_class_dependencies -> RepoParser
+load_gitignore_prefixes -> RepoParser
+should_ignore -> RepoParser
+get_py_files -> RepoParser
+parse -> RepoParser
+parse_functions -> RepoParser
+analyze_dependencies -> RepoParser
+visit_ClassDef -> DependencyVisitor
+visit_Call -> DependencyVisitor
+get_completion -> OpenAIChatClient
+generate_class_descriptions -> OpenAIChatClient
+main -> Main
+generate_structure -> OutputReformatter
+get_output -> OutputReformatter
+save_to_json -> OutputReformatter
+
+Class Dependencies:
+{'RepoParser': ('', set()), 'ClassFunctionVisitor': ('', set()), 'DependencyVisitor': ('', set()), 'OpenAIChatClient': ('', set()), 'Main': ('', {'RepoParser'}), 'OutputReformatter': ('', set())}

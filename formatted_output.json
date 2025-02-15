@@ -2,44 +2,51 @@
     "nodes": [
         {
             "id": "1",
-            "label": "ClassA",
-            "additionalInfo": "This is Class A",
+            "label": "RepoParser",
+            "additionalInfo": "",
             "hidden": false
         },
         {
             "id": "2",
-            "label": "ClassB",
-            "additionalInfo": "This is Class B",
+            "label": "ClassFunctionVisitor",
+            "additionalInfo": "",
             "hidden": false
         },
         {
             "id": "3",
-            "label": "ClassC",
-            "additionalInfo": "This is Class C",
+            "label": "DependencyVisitor",
+            "additionalInfo": "",
             "hidden": false
         },
         {
             "id": "4",
-            "label": "ClassD",
-            "additionalInfo": "This is Class D",
+            "label": "OpenAIChatClient",
+            "additionalInfo": "",
+            "hidden": false
+        },
+        {
+            "id": "5",
+            "label": "Main",
+            "additionalInfo": "",
+            "hidden": false
+        },
+        {
+            "id": "6",
+            "label": "OutputReformatter",
+            "additionalInfo": "",
             "hidden": false
         }
     ],
     "edges": [
         {
             "id": "e1",
-            "source": "1",
-            "target": "2"
+            "source": "5",
+            "target": "1"
         },
         {
             "id": "e2",
-            "source": "1",
-            "target": "3"
-        },
-        {
-            "id": "e3",
-            "source": "2",
-            "target": "4"
+            "source": "5",
+            "target": "6"
         }
     ]
 }

@@ -8,10 +8,27 @@ class RepoParser:
         self.function_to_class = {}  # Mapping: function/method name -> class name
         self.class_dependencies = {}  # Mapping: class name -> set of dependent class names
 
+    def construct_class_dependencies(self):
+        self.parse()
+
+        print("Function to Class Mapping:")
+        for func, cls in self.function_to_class.items():
+            print(f"{func} -> {cls}")
+
+        print("\nClass Dependencies:")
+        classes = {}
+        for cls, deps in self.class_dependencies.items():
+            classes[cls] = (("", list(deps)))
+
+        print(classes)
+        return classes
+
+
     def load_gitignore_prefixes(self):
         """
         Loads .gitignore and returns a list of normalized absolute path prefixes.
         Only simple prefixes are supported.
+
         """
         prefixes = []
         gitignore_path = os.path.join(self.repo_path, '.gitignore')
@@ -87,13 +104,12 @@ class RepoParser:
         Returns a dict: { caller_class: set(dependent_class) }
         """
         deps = {}
-        visitor = DependencyVisitor(self.function_to_class)
         try:
             with open(filepath, 'r', encoding='utf-8') as f:
                 content = f.read()
                 tree = ast.parse(content, filename=filepath)
+            visitor = DependencyVisitor(self.function_to_class)
             visitor.visit(tree)
-            print(visitor.dependencies)
             deps = visitor.dependencies
         except Exception as e:
             print(f"Error analyzing dependencies in {filepath}: {e}")
@@ -140,30 +156,18 @@ class DependencyVisitor(ast.NodeVisitor):
                 if self.current_class != callee_class:
                     self.dependencies[self.current_class].add(callee_class)
         elif isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name):
-            instance_name = node.func.value.id
+            print("here")
+            print(self.current_class)
             method_name = node.func.attr
+            print(method_name)
             # This part is tricky: we assume the instance might belong to a class that has methods mapped.
             # Here we would need more sophisticated analysis or assumptions about instance origins.
             if method_name in self.function_to_class:
+                print("here1")
                 callee_class = self.function_to_class[method_name]
+                print(callee_class)
                 if self.current_class and self.current_class != callee_class:
+                    print("here2")
                     self.dependencies[self.current_class].add(callee_class)
         self.generic_visit(node)
 
-class Main:
-    def main(self):
-        repo_path = "./"
-        parser = RepoParser(repo_path)
-        parser.parse()
-
-        print("Function to Class Mapping:")
-        for func, cls in parser.function_to_class.items():
-            print(f"{func} -> {cls}")
-
-        print("\nClass Dependencies:")
-        for cls, deps in parser.class_dependencies.items():
-            deps_str = ", ".join(deps) if deps else "None"
-            print(f"{cls} depends on: {deps_str}")
-
-if __name__ == "__main__":
-    Main().main()
