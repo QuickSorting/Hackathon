@@ -1473,52 +1473,57 @@ const small_graph = {
         {
             "id": "1",
             "label": "RepoParser",
-            "additionalInfo": "",
+            "additionalInfo": "**Purpose:** The `RepoParser` class is designed to analyze a Python repository by identifying class dependencies and mapping function names to their respective classes. It accomplishes this by traversing the directory structure of the specified repository, effectively ignoring paths defined in the `.gitignore` file, and parsing Python files to extract class and function relationships. Ultimately, it leverages an external OpenAI API client to generate descriptions of the identified classes and their dependencies, providing insights into the structure and interconnections within the codebase.",
             "hidden": false
         },
         {
             "id": "2",
             "label": "ClassFunctionVisitor",
-            "additionalInfo": "",
+            "additionalInfo": "**Purpose:** The `ClassFunctionVisitor` class is an AST (Abstract Syntax Tree) visitor designed to traverse Python class definitions in source code. Its primary responsibility is to create a mapping of method names to their defining class names, collecting this information while also storing the source code for each class. It assumes function names across classes are unique and allows for analyzing the structure and organization of classes within Python code for purposes such as code analysis, documentation generation, or static code checking.",
             "hidden": false
         },
         {
             "id": "3",
             "label": "DependencyVisitor",
-            "additionalInfo": "",
+            "additionalInfo": "**Purpose:** The `DependencyVisitor` class is responsible for analyzing the abstract syntax tree (AST) of Python code to identify and record the dependencies between classes based on function calls made within class methods. It operates as a second-pass visitor that builds a mapping of classes to their respective dependencies by examining function call constructs and comparing them to a predefined mapping of functions to classes obtained from an initial scan of the code. This functionality enables better understanding of inter-class relationships and dependencies in the codebase, which can be useful for refactoring, code analysis, or dependency management tasks.",
             "hidden": false
         },
         {
             "id": "4",
             "label": "OpenAIChatClient",
-            "additionalInfo": "",
+            "additionalInfo": "**Purpose:** The `OpenAIChatClient` class is designed to facilitate interactions with the OpenAI API by providing methods for sending user inputs and receiving chat completions. It encapsulates the initialization of the OpenAI client with an API key and offers a straightforward interface to request chat-based responses, handling potential errors during the process to ensure robustness. Additionally, it includes a method to generate class descriptions based on provided code, leveraging the OpenAI model to provide structured feedback.",
             "hidden": false
         },
         {
             "id": "5",
             "label": "Main",
-            "additionalInfo": "",
+            "additionalInfo": "**Purpose:** The `Main` class is responsible for orchestrating the process of parsing a software repository to analyze its class dependencies, reformatting the parsed class structure, and saving the output in a structured JSON format. It achieves this by initializing a `RepoParser` to construct the dependencies of classes found within a specified directory, utilizing an `OutputReformatter` to reorganize this class information, and ultimately exporting the reformatted structure to a file named 'formatted_output.json'.",
             "hidden": false
         },
         {
             "id": "6",
             "label": "OutputReformatter",
-            "additionalInfo": "",
+            "additionalInfo": "**Purpose:** The `OutputReformatter` class is designed to process a dictionary that represents a collection of classes, including their descriptions and dependencies, and generate a structured representation of this data in the form of nodes and edges. This structure facilitates visualization or further processing by clearly defining relationships between classes, where each class is a node with associated details and dependencies are represented as edges connecting these nodes. Additionally, the class includes functionality to save this structured data to a JSON file for easy persistence and sharing.",
             "hidden": false
         }
     ],
     "edges": [
         {
             "id": "e1",
-            "source": "5",
-            "target": "1"
+            "source": "1",
+            "target": "4"
         },
         {
             "id": "e2",
             "source": "5",
             "target": "6"
+        },
+        {
+            "id": "e3",
+            "source": "5",
+            "target": "1"
         }
     ]
-};
+}
 
 export const graph = small_graph;

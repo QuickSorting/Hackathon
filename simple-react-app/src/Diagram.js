@@ -1,4 +1,6 @@
 // Diagram.js
+import ReactMarkdown from 'react-markdown';
+import { Box } from '@chakra-ui/react';
 import React, { useCallback, useState } from 'react';
 import ReactFlow, {
   Controls,
@@ -139,17 +141,17 @@ export default function Diagram() {
           <ModalHeader>{selectedNodeData?.label || 'Node Details'}</ModalHeader>
           <ModalCloseButton />
           <ModalBody>
-            <pre
-              style={{
-                background: '#f4f4f4',
-                padding: '1rem',
-                borderRadius: '4px',
-                overflowX: 'auto',
-              }}
-            >
-              {selectedNodeData?.code || 'No code details available.'}
-            </pre>
-          </ModalBody>
+              <Box
+                p="1rem"
+                borderRadius="4px"
+                overflowX="auto"
+                whiteSpace="pre-wrap"
+              >
+                <ReactMarkdown>
+                  {selectedNodeData?.additionalInfo || 'No additional details available.'}
+                </ReactMarkdown>
+              </Box>
+            </ModalBody>
           <ModalFooter>
             <Button onClick={() => setIsModalOpen(false)}>Close</Button>
           </ModalFooter>
