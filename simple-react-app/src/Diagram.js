@@ -151,6 +151,16 @@ export default function Diagram() {
                   {selectedNodeData?.additionalInfoLong || 'No additional details available.'}
                 </ReactMarkdown>
               </Box>
+                <pre
+                style={{
+                  background: '#f4f4f4',
+                  padding: '1rem',
+                  borderRadius: '4px',
+                  overflowX: 'auto',
+                }}
+              >
+                {selectedNodeData?.code || 'No code details available.'}
+              </pre>
             </ModalBody>
           <ModalFooter>
             <Button onClick={() => setIsModalOpen(false)}>Close</Button>
