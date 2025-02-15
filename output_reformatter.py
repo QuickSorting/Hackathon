@@ -17,7 +17,7 @@ class OutputReformatter:
 
         print(self.class_dict.items())
         # Create nodes
-        for class_name, ((short, long), _) in self.class_dict.items():
+        for class_name, ((short, long), source, _) in self.class_dict.items():
             node_id = str(counter)
             self.node_ids[class_name] = node_id  # Store ID mapping
             self.nodes.append({
@@ -25,6 +25,7 @@ class OutputReformatter:
                 "label": class_name,
                 "additionalInfoLong": long,
                 "additionalInfoShort": short,
+                "source": source,
                 "hidden": False
             })
             counter += 1

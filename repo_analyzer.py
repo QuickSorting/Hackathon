@@ -28,7 +28,7 @@ class RepoParser:
 
         classes = {}
         for cls, deps in self.class_dependencies.items():
-            classes[cls] = (client.generate_class_description(self.class_source_code[cls]), list(deps))
+            classes[cls] = (client.generate_class_description(self.class_source_code[cls]), self.class_source_code[cls], list(deps))
 
         return classes
 
