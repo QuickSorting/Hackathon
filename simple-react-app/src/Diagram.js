@@ -1,7 +1,6 @@
 // Diagram.js
 import React, { useCallback } from 'react';
 import ReactFlow, {
-  MiniMap,
   Controls,
   Background,
   addEdge,
@@ -9,11 +8,24 @@ import ReactFlow, {
   useEdgesState,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { initialNodes, initialEdges } from './nodes';
+import { generateFlowData } from './nodes';
+import { graph } from './json_description';
+import CustomNode from './CustomNode';
+
+const nodeTypes = {
+  custom: CustomNode,
+};
 
 export default function Diagram() {
+  const initialDiagram = generateFlowData(graph);
+  const initialNodes = initialDiagram.nodes;
+  const initialEdges = initialDiagram.edges;
+  console.log(initialNodes);
+  console.log(initialEdges);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+
+  console.log("After")
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
@@ -41,7 +53,7 @@ export default function Diagram() {
             style: {
               ...node.style,
               opacity: 1,
-              pointerEvents: 'auto', // enable interactions now that it's visible
+              pointerEvents: 'auto',
             },
           };
         }
@@ -78,9 +90,9 @@ export default function Diagram() {
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeClick={onNodeClick}
+        nodeTypes={nodeTypes}  // Use our custom node type
         fitView
       >
-        <MiniMap />
         <Controls />
         <Background color="#aaa" gap={16} />
       </ReactFlow>
