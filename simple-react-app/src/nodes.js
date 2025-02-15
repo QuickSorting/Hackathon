@@ -15,7 +15,7 @@ export function generateFlowData(graph, targetWidth = 150, targetHeight = 150, m
     rankdir: 'TB',
     marginx: 50,
     marginy: 50,
-    nodesep: 20,  
+    nodesep: 40,  
     ranksep: 10,  
   });
 

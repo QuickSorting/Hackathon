@@ -14,6 +14,7 @@ function App() {
           <Text fontSize="lg" mb={4} textAlign="center" color="gray.700">
             Explore the interactive diagram below to discover how different parts of the repository connect and interact.
           </Text>
+          <Diagram />
           <Box mb={8} p={4} bg="white" borderRadius="md" boxShadow="sm">
             <Heading as="h2" size="md" mb={2}>
               How to Interact with the Diagram
@@ -25,7 +26,6 @@ function App() {
               <ListItem>Right-click a class to access a detailed description.</ListItem>
             </UnorderedList>
           </Box>
-          <Diagram />
         </Container>
       </Box>
     </ChakraProvider>
