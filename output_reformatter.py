@@ -32,7 +32,7 @@ class OutputReformatter:
 
         # Create edges
         edge_counter = 1
-        for class_name, (_, dependencies) in self.class_dict.items():
+        for class_name, (_, _, dependencies) in self.class_dict.items():
             source_id = self.node_ids[class_name]
             for dep in dependencies:
                 if dep in self.node_ids:  # Ensure dependency exists
