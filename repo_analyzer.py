@@ -10,7 +10,7 @@ class FunctionCallVisitor(ast.NodeVisitor):
         super().__init__()
         self.calls = []
 
-    def visit_call(self, node):
+    def visit_Call(self, node):
         func_name = self.get_func_name(node.func)
         if func_name:
             self.calls.append(func_name)
@@ -108,6 +108,7 @@ class RepoAnalyzer:
         functions = {}
         for node in ast.walk(tree):
             if isinstance(node, ast.FunctionDef):
+                print(node)
                 visitor = FunctionCallVisitor()
                 visitor.visit(node)
                 functions[node.name] = visitor.calls
