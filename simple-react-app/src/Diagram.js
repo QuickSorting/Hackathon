@@ -1,7 +1,6 @@
 // Diagram.js
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import ReactFlow, {
-  MiniMap,
   Controls,
   Background,
   addEdge,
@@ -9,20 +8,46 @@ import ReactFlow, {
   useEdgesState,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
-import { initialNodes, initialEdges } from './nodes';
+import { generateFlowData } from './nodes';
+import { graph } from './json_description';
+import CustomNode from './CustomNode';
+import {
+  Modal,
+  ModalOverlay,
+  ModalContent,
+  ModalHeader,
+  ModalCloseButton,
+  ModalBody,
+  ModalFooter,
+  Button,
+} from '@chakra-ui/react';
+
+const nodeTypes = {
+  custom: CustomNode,
+};
 
 export default function Diagram() {
+  const initialDiagram = generateFlowData(graph);
+  const initialNodes = initialDiagram.nodes;
+  const initialEdges = initialDiagram.edges;
+
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
 
+  // State for the modal that shows detailed information
+  const [selectedNodeData, setSelectedNodeData] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Existing connection logic
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
     [setEdges]
   );
 
+  // onNodeClick logic: reveals connected nodes and updates edge visibility
   const onNodeClick = useCallback(
     (event, clickedNode) => {
-      // Find IDs of nodes connected to the clicked node
+      // Find connected node IDs
       const connectedNodeIds = edges
         .filter(
           (edge) =>
@@ -32,7 +57,7 @@ export default function Diagram() {
           edge.source === clickedNode.id ? edge.target : edge.source
         );
 
-      // Update nodes: reveal any connected node that is still hidden
+      // Update nodes: reveal any connected node that is hidden
       const updatedNodes = nodes.map((node) => {
         if (connectedNodeIds.includes(node.id) && node.data.hidden) {
           return {
@@ -41,7 +66,7 @@ export default function Diagram() {
             style: {
               ...node.style,
               opacity: 1,
-              pointerEvents: 'auto', // enable interactions now that it's visible
+              pointerEvents: 'auto',
             },
           };
         }
@@ -49,7 +74,7 @@ export default function Diagram() {
       });
       setNodes(updatedNodes);
 
-      // Update edges: only show an edge if both connected nodes are visible
+      // Update edges: show an edge only if both connected nodes are visible
       const updatedEdges = edges.map((edge) => {
         const sourceNode = updatedNodes.find((n) => n.id === edge.source);
         const targetNode = updatedNodes.find((n) => n.id === edge.target);
@@ -69,21 +94,67 @@ export default function Diagram() {
     [edges, nodes, setNodes, setEdges]
   );
 
+  // Right-click (context menu) handler to show detailed node info
+  const handleNodeContextMenu = useCallback((event, nodeData) => {
+    event.preventDefault();
+    setSelectedNodeData(nodeData);
+    setIsModalOpen(true);
+  }, []);
+
+  // Enhance each node with an onContextMenu property for right-click support.
+  const enhancedNodes = nodes.map((node) => ({
+    ...node,
+    data: {
+      ...node.data,
+      onContextMenu: (event, nodeData) => {
+        // Your context menu logic (e.g., open a modal)
+        event.preventDefault();
+        setSelectedNodeData(nodeData);
+        setIsModalOpen(true);
+      },
+    },
+  }));
+
+
   return (
-    <div style={{ height: 500 }}>
+    <div style={{ height: 1000 }}>
       <ReactFlow
-        nodes={nodes}
+        nodes={enhancedNodes}
         edges={edges}
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         onConnect={onConnect}
         onNodeClick={onNodeClick}
+        nodeTypes={nodeTypes}
         fitView
       >
-        <MiniMap />
         <Controls />
         <Background color="#aaa" gap={16} />
       </ReactFlow>
+
+      {/* Modal for showing detailed node information (e.g., code) */}
+      <Modal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} size="xl">
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader>{selectedNodeData?.label || 'Node Details'}</ModalHeader>
+          <ModalCloseButton />
+          <ModalBody>
+            <pre
+              style={{
+                background: '#f4f4f4',
+                padding: '1rem',
+                borderRadius: '4px',
+                overflowX: 'auto',
+              }}
+            >
+              {selectedNodeData?.code || 'No code details available.'}
+            </pre>
+          </ModalBody>
+          <ModalFooter>
+            <Button onClick={() => setIsModalOpen(false)}>Close</Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
   );
 }

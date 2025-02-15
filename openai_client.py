@@ -26,18 +26,27 @@ class OpenAIChatClient:
 
     def generate_class_descriptions(self, class_definitions):
         template = """
-        You are an expert software engineer and technical writer. Below is the code for a class from a software repository written in Python. Please provide a detailed description of this class that includes the following:
+        You are an expert software engineer and technical writer. Below is the code for a class from a software repository written in Python. Please provide a detailed description of this class in the following format:
 
-        **Purpose:** What is the main responsibility of this class? (phrase this in a short single paragraph)
+        **Purpose:** What is the main responsibility of this class? (I want just a single paragraph)
 
         [Insert class code here]
         """
 
+        class_descriptions = {}
         for class_name, source_code in class_definitions.items():
             # Replace placeholder with actual source code
             prompt = template.replace("[Insert class code here]", source_code)
-            print(f"Prompt for class {class_name}:\n{prompt}\n")
-            print(self.get_completion(prompt))
+            # print(f"Prompt for class {class_name}:\n{prompt}\n")
+            # print(self.get_completion(prompt))
+            class_descriptions[class_name] = self.get_completion(prompt)
+
+        return class_descriptions
+
+def func():
+    from repo_analyzer import RepoAnalyzer
+    analyzer = RepoAnalyzer("./")
+    _, _ = analyzer.analyze_repository()
 
 if __name__ == "__main__":
     file_path = './key'
@@ -57,5 +66,8 @@ if __name__ == "__main__":
     analyzer = RepoAnalyzer("./")
     analysis, class_definitions = analyzer.analyze_repository()
 
-    client.generate_class_descriptions(class_definitions)
+    print(analysis)
+    exit(0)
 
+    class_descriptions = client.generate_class_descriptions(class_definitions)
+    print(class_descriptions)

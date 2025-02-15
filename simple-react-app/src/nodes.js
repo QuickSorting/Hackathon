@@ -1,45 +1,56 @@
-// nodes.js (or within your Diagram file)
-export const initialNodes = [
-    {
-        id: '1',
-        type: 'input',
-        data: { label: 'Start Node' },
-        position: { x: 250, y: 5 },
-    },
-    {
-        id: '2',
-        data: { label: 'Hidden Node 1', hidden: true },
-        position: { x: 100, y: 100 },
-        style: {
-        opacity: 0,
-        pointerEvents: 'none',
-        transition: 'opacity 0.5s ease',
-        },
-    },
-    {
-        id: '3',
-        data: { label: 'Hidden Node 2', hidden: true },
-        position: { x: 400, y: 100 },
-        style: {
-        opacity: 0,
-        pointerEvents: 'none',
-        transition: 'opacity 0.5s ease',
-        },
-    },
-];
+export function generateFlowData(graph) {
+    const { nodes, edges } = graph;
   
-export const initialEdges = [
-    {
-        id: 'e1-2',
-        source: '1',
-        target: '2',
-        style: { opacity: 0, transition: 'opacity 0.5s ease' },
-    },
-    {
-        id: 'e1-3',
-        source: '1',
-        target: '3',
-        style: { opacity: 0, transition: 'opacity 0.5s ease' },
-    },
-];
+    // Generate nodes with a simple grid layout
+    const generatedNodes = nodes.map((node, i) => {
+      const col = i % 3;
+      const row = Math.floor(i / 3);
+      return {
+        id: node.id,
+        type: node.type || 'custom', // default to your custom node type
+        data: {
+          label: node.label,
+          additionalInfo: node.additionalInfo,
+          hidden: node.hidden || false,
+        },
+        position: {
+          x: col * 250 + 50,
+          y: row * 150 + 50,
+        },
+        style: {
+          opacity: node.hidden ? 0 : 1,
+          transition: 'opacity 0.5s ease',
+        },
+      };
+    });
+  
+    // Create a lookup for node visibility
+    const nodeLookup = generatedNodes.reduce((acc, node) => {
+      acc[node.id] = node;
+      return acc;
+    }, {});
+  
+    // Generate edges and set edge opacity based on both nodes' visibility
+    const generatedEdges = edges.map((edge) => {
+      const sourceNode = nodeLookup[edge.source];
+      const targetNode = nodeLookup[edge.target];
+      const edgeVisible =
+        sourceNode &&
+        targetNode &&
+        !sourceNode.data.hidden &&
+        !targetNode.data.hidden;
+  
+      return {
+        id: edge.id || `${edge.source}-${edge.target}`,
+        source: edge.source,
+        target: edge.target,
+        style: {
+          opacity: edgeVisible ? 1 : 0,
+          transition: 'opacity 0.5s ease',
+        },
+      };
+    });
+  
+    return { nodes: generatedNodes, edges: generatedEdges };
+  }
   
