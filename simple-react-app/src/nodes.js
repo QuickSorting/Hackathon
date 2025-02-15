@@ -3,8 +3,8 @@ export function generateFlowData(graph) {
   
     // Generate nodes with a simple grid layout
     const generatedNodes = nodes.map((node, i) => {
-      const col = i % 3;
-      const row = Math.floor(i / 3);
+      const col = Math.floor(Math.random() * 250);
+      const row = Math.floor(Math.random() * 150);
       return {
         id: node.id,
         type: node.type || 'custom', // default to your custom node type
@@ -12,10 +12,11 @@ export function generateFlowData(graph) {
           label: node.label,
           additionalInfo: node.additionalInfo,
           hidden: node.hidden || false,
+          code: node.code,
         },
         position: {
-          x: col * 250 + 50,
-          y: row * 150 + 50,
+          x: col + 50,
+          y: row + 50,
         },
         style: {
           opacity: node.hidden ? 0 : 1,
