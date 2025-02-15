@@ -1,0 +1,28 @@
+Mermaid Flowchart:
+
+flowchart TD
+    node0["expander.py: is_ignored_line"]
+    node1["expander.py: __init__"]
+    node2["expander.py: find_acl"]
+    node3["expander.py: expand_acl"]
+    node4["expander.py: expand"]
+    node5["generate_document.py: convert"]
+    node6["generate_document.py: __init__"]
+    node7["generate_document.py: __getitem__"]
+    node8["test_expander.py: compile_test"]
+    node9["test_expander.py: test_dsu"]
+    node10["test_expander.py: test_unusual_format"]
+    node11["test_expander.py: test_all"]
+    node12["test_expander.py: test_comment_out"]
+    node13["test_expander.py: test_env_value"]
+    node3 --> node0
+    node3 --> node3
+    node3 --> node2
+    node4 --> node2
+    node4 --> node3
+    node9 --> node8
+    node10 --> node8
+    node11 --> node8
+    node12 --> node8
+    node13 --> node8
+    node13 --> node8
