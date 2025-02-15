@@ -12,11 +12,8 @@ class Main:
         diagram_parser.generate_structure()
         diagram_parser.save_to_json("formatted_output.json")
 
-if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("Usage: python analyze_repo.py /path/to/repo")
-        sys.exit(1)
 
+if __name__ == '__main__':
     Main().main()
 
 
