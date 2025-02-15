@@ -1,17 +1,22 @@
 import sys
-from repo_analyzer import RepoAnalyzer
+from repo_analyzer import RepoParser
 from output_reformatter import OutputReformatter
 
+class Main:
+    def main(self):
+        repo = RepoParser('./')
+        classes = repo.construct_class_dependencies()
+    
+        print(classes)
+        diagram_parser = OutputReformatter(classes)
+        diagram_parser.generate_structure()
+        diagram_parser.save_to_json("formatted_output.json")
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print("Usage: python analyze_repo.py /path/to/repo")
         sys.exit(1)
 
-    repo_path = sys.argv[1]
-    analyzer = RepoAnalyzer(repo_path)
+    Main().main()
 
-    analysis, class_definitions = analyzer.analyze_repository()
 
-    diagram_parser = OutputReformatter(analysis)
-    diagram_parser.to_json("formatted_output.json")

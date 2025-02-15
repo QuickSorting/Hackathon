@@ -1,144 +1,173 @@
 import os
 import ast
-import fnmatch
 
-class FunctionCallVisitor(ast.NodeVisitor):
-    """
-    AST visitor that collects names of functions called within a node.
-    """
-    def __init__(self):
-        super().__init__()
-        self.calls = []
-
-    def visit_Call(self, node):
-        func_name = self.get_func_name(node.func)
-        if func_name:
-            self.calls.append(func_name)
-        self.generic_visit(node)
-
-    def get_func_name(self, node):
-        if isinstance(node, ast.Name):
-            return node.id
-        elif isinstance(node, ast.Attribute):
-            return node.attr
-        return None
-
-class RepoAnalyzer:
-    """
-    Analyzes Python files in a repository for function calls and generates a Mermaid diagram.
-    """
+class RepoParser:
     def __init__(self, repo_path):
-        self.repo_path = repo_path
-        self.ignore_patterns = self.load_gitignore()
+        self.repo_path = os.path.abspath(repo_path)
+        self.ignore_prefixes = self.load_gitignore_prefixes()
+        self.function_to_class = {}  # Mapping: function/method name -> class name
+        self.class_dependencies = {}  # Mapping: class name -> set of dependent class names
 
-    def load_gitignore(self):
+    def construct_class_dependencies(self):
+        self.parse()
+
+        print("Function to Class Mapping:")
+        for func, cls in self.function_to_class.items():
+            print(f"{func} -> {cls}")
+
+        print("\nClass Dependencies:")
+        classes = {}
+        for cls, deps in self.class_dependencies.items():
+            classes[cls] = (("", list(deps)))
+
+        print(classes)
+        return classes
+
+
+    def load_gitignore_prefixes(self):
         """
-        Loads and parses .gitignore to get patterns to ignore.
+        Loads .gitignore and returns a list of normalized absolute path prefixes.
+        Only simple prefixes are supported.
+
         """
-        ignore_patterns = []
+        prefixes = []
+        gitignore_path = os.path.join(self.repo_path, '.gitignore')
         try:
-            with open(os.path.join(self.repo_path, '.gitignore'), 'r') as file:
-                for line in file:
+            with open(gitignore_path, 'r') as f:
+                for line in f:
                     line = line.strip()
                     if line and not line.startswith('#'):
-                        ignore_patterns.append(line)
+                        # Normalize the pattern to an absolute path prefix.
+                        # Here we assume the pattern is relative to repo root.
+                        prefix = os.path.normpath(os.path.join(self.repo_path, line))
+                        prefixes.append(prefix)
         except FileNotFoundError:
-            print(".gitignore not found, proceeding without ignore patterns.")
-        return ignore_patterns
+            print(f".gitignore not found in {self.repo_path}; proceeding without ignore prefixes.")
+        return prefixes
 
     def should_ignore(self, path):
         """
-        Determines if a given path should be ignored based on .gitignore patterns.
+        Check if the given path should be ignored based on the .gitignore prefixes.
         """
-        # Check relative to repo root
-        rel_path_root = os.path.relpath(path, self.repo_path)
-        rel_path_root = rel_path_root.replace(os.sep, '/')  # Normalize for cross-platform compatibility
+        normalized = os.path.normpath(path)
+        return any(normalized.startswith(prefix) for prefix in self.ignore_prefixes)
 
-        # Check patterns that match from the repository root
-        if any(fnmatch.fnmatch(rel_path_root, pattern) for pattern in self.ignore_patterns):
-            return True
-
-        return False
-
-    def extract_classes(self, filepath):
-        """
-        Extracts class definitions and their names from a Python file.
-        """
-        with open(filepath, 'r', encoding='utf-8') as file:
-            content = file.read()
-            tree = ast.parse(content, filename=filepath)
-
-        classes = {}
-        for node in ast.walk(tree):
-            if isinstance(node, ast.ClassDef):
-                classes[node.name] = ast.unparse(node)
-        return classes
-
-    def analyze_repository(self):
-        """
-        Analyzes all Python files in the specified repository.
-        """
-        analysis = {}
-        class_definitions = {}
-        for root, dirs, files in os.walk(self.repo_path):
-            # Apply ignore patterns to directories and files
-            files = [f for f in files if not self.should_ignore(os.path.join(root, f))]
+    def get_py_files(self):
+        """Generator yielding Python file paths under the repository that are not ignored."""
+        for root, dirs, files in os.walk(self.repo_path, topdown=True):
+            # Filter out ignored directories
             dirs[:] = [d for d in dirs if not self.should_ignore(os.path.join(root, d))]
-
             for file in files:
-                if file.endswith('.py'):
-                    filepath = os.path.join(root, file)
-                    analysis[filepath] = self.analyze_file(filepath)
-                    class_definitions.update(self.extract_classes(filepath))
+                filepath = os.path.join(root, file)
+                if file.endswith('.py') and not self.should_ignore(filepath):
+                    yield filepath
 
-        return analysis, class_definitions
-
-    def analyze_file(self, filepath):
+    def parse(self):
         """
-        Parses a single Python file to extract function calls.
+        Runs the two scans:
+         1. Collects mapping of function names to their classes.
+         2. Analyzes dependencies based on function calls.
         """
-        with open(filepath, 'r', encoding='utf-8') as f:
-            try:
-                file_contents = f.read()
-                tree = ast.parse(file_contents, filename=filepath)
-            except Exception as e:
-                print(f"Error parsing {filepath}: {e}")
-                return {}
+        # First scan: build function_to_class mapping.
+        for filepath in self.get_py_files():
+            mapping = self.parse_functions(filepath)
+            self.function_to_class.update(mapping)
 
-        functions = {}
-        for node in ast.walk(tree):
-            if isinstance(node, ast.FunctionDef):
-                print(node)
-                visitor = FunctionCallVisitor()
-                visitor.visit(node)
-                functions[node.name] = visitor.calls
-        return functions
+        # Second scan: determine dependencies using the mapping.
+        for filepath in self.get_py_files():
+            deps = self.analyze_dependencies(filepath)
+            for cls, dep_set in deps.items():
+                if cls not in self.class_dependencies:
+                    self.class_dependencies[cls] = set()
+                self.class_dependencies[cls].update(dep_set)
 
-    def generate_mermaid(self, analysis):
+    def parse_functions(self, filepath):
         """
-        Generates a Mermaid diagram from the analysis data.
+        First scan: parse file to map each function (method) name to its class.
+        Returns a dict: { function_name: class_name }
         """
-        mermaid_lines = ["flowchart TD"]
-        node_ids = {}
-        edges = []
-        counter = 0
+        mapping = {}
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                content = f.read()
+            tree = ast.parse(content, filename=filepath)
+            visitor = ClassFunctionVisitor()
+            visitor.visit(tree)
+            mapping = visitor.function_to_class
+        except Exception as e:
+            print(f"Error parsing functions in {filepath}: {e}")
+        return mapping
 
-        for filepath, funcs in analysis.items():
-            base_file = os.path.basename(filepath)
-            for func, calls in funcs.items():
-                node_id = f"node{counter}"
-                counter += 1
-                label = f"{base_file}: {func}"
-                node_ids[(filepath, func)] = node_id
-                mermaid_lines.append(f"    {node_id}[\"{label}\"]")
+    def analyze_dependencies(self, filepath):
+        """
+        Second scan: parse file to detect dependencies between classes based on method calls.
+        Returns a dict: { caller_class: set(dependent_class) }
+        """
+        deps = {}
+        try:
+            with open(filepath, 'r', encoding='utf-8') as f:
+                content = f.read()
+                tree = ast.parse(content, filename=filepath)
+            visitor = DependencyVisitor(self.function_to_class)
+            visitor.visit(tree)
+            deps = visitor.dependencies
+        except Exception as e:
+            print(f"Error analyzing dependencies in {filepath}: {e}")
+        return deps
 
-        for filepath, funcs in analysis.items():
-            for func, calls in funcs.items():
-                src_id = node_ids[(filepath, func)]
-                for call in calls:
-                    target = next((nid for (fp, f_name), nid in node_ids.items() if f_name == call), None)
-                    if target:
-                        edges.append(f"    {src_id} --> {target}")
+class ClassFunctionVisitor(ast.NodeVisitor):
+    """
+    First-pass visitor: records for each class the methods it defines.
+    Builds a mapping: function (method) name -> class name.
+    Assumes function names are unique across all classes.
+    """
+    def __init__(self):
+        self.function_to_class = {}
 
-        mermaid_lines.extend(edges)
-        return "\n".join(mermaid_lines)
+    def visit_ClassDef(self, node):
+        class_name = node.name
+        for item in node.body:
+            if isinstance(item, ast.FunctionDef):
+                # Map the method name to the class
+                self.function_to_class[item.name] = class_name
+        # Continue traversing to capture nested classes if any.
+        self.generic_visit(node)
+
+class DependencyVisitor(ast.NodeVisitor):
+    """
+    Second-pass visitor: examines function calls within class methods and determines
+    dependencies based on the function_to_class mapping from the first scan.
+    """
+    def __init__(self, function_to_class):
+        self.function_to_class = function_to_class  # Mapping from first scan
+        self.dependencies = {}  # { caller_class: set(dependent_classes) }
+        self.current_class = None
+
+    def visit_ClassDef(self, node):
+        self.current_class = node.name
+        self.dependencies.setdefault(self.current_class, set())
+        self.generic_visit(node)
+
+    def visit_Call(self, node):
+        if isinstance(node.func, ast.Name):
+            func_name = node.func.id
+            if func_name in self.function_to_class and self.current_class:
+                callee_class = self.function_to_class[func_name]
+                if self.current_class != callee_class:
+                    self.dependencies[self.current_class].add(callee_class)
+        elif isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name):
+            print("here")
+            print(self.current_class)
+            method_name = node.func.attr
+            print(method_name)
+            # This part is tricky: we assume the instance might belong to a class that has methods mapped.
+            # Here we would need more sophisticated analysis or assumptions about instance origins.
+            if method_name in self.function_to_class:
+                print("here1")
+                callee_class = self.function_to_class[method_name]
+                print(callee_class)
+                if self.current_class and self.current_class != callee_class:
+                    print("here2")
+                    self.dependencies[self.current_class].add(callee_class)
+        self.generic_visit(node)
+
