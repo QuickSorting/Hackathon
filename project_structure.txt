@@ -1,0 +1,22 @@
+.
+├── LICENSE
+├── __pycache__
+│   ├── analyze_repo.cpython-313.pyc
+│   └── repo_analyzer.cpython-313.pyc
+├── main.py
+├── mermaid-chart-app
+│   ├── README.md
+│   ├── package-lock.json
+│   ├── package.json
+│   ├── public
+│   └── src
+├── openai_client.py
+├── project_structure.txt
+├── repo_analyzer.py
+└── venv
+    ├── bin
+    ├── include
+    ├── lib
+    └── pyvenv.cfg
+
+9 directories, 11 files

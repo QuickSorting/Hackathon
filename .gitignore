@@ -1,4 +1,5 @@
-venv/
-simple-react-app/node_modules/
+venv
+mermaid-chart-app/node_modules
 .DS_Store
 __pycache__
+key
