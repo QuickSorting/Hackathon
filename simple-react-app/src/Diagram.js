@@ -148,7 +148,7 @@ export default function Diagram() {
                 whiteSpace="pre-wrap"
               >
                 <ReactMarkdown>
-                  {selectedNodeData?.additionalInfo || 'No additional details available.'}
+                  {selectedNodeData?.additionalInfoLong || 'No additional details available.'}
                 </ReactMarkdown>
               </Box>
             </ModalBody>

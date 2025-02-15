@@ -14,7 +14,7 @@ export default function CustomNode({ data }) {
 
   return (
     <Tooltip
-      label={'No additional info'}
+      label={data.additionalInfoShort || 'Right-click for additional info'}
       placement="top"
       hasArrow
       bg="gray.700"

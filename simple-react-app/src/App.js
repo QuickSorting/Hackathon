@@ -20,8 +20,13 @@ function App() {
           <Heading as="h1" size="2xl" mb={4} textAlign="center" color="teal.600">
             Code Repository Analysis
           </Heading>
+          <Text fontSize="lg" mb={4} textAlign="center" color="gray.700">
+            This project analyzes a code repository by visualizing the connections between classes.
+            It reveals the relationships and interactions among different components, making it easier
+            to understand the overall architecture.
+          </Text>
           <Text fontSize="lg" mb={6} textAlign="center" color="gray.700">
-            Explore the interactive diagram below to discover how different parts of the repository connect and interact.
+            Explore the interactive diagram below to discover how various parts of the repository connect and interact.
           </Text>
 
           {/* Instructions */}

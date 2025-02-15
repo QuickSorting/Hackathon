@@ -69,9 +69,10 @@ export function generateFlowData(graph, targetWidth = 150, targetHeight = 150, m
       type: node.type || 'custom',
       data: {
         label: node.label,
-        additionalInfo: node.additionalInfo,
+        additionalInfoLong: node.additionalInfoLong,
         hidden: node.hidden || false,
         code: node.code,
+        additionalInfoShort: node.additionalInfoShort,
         onContextMenu: node.onContextMenu,
       },
       position: {
