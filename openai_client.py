@@ -39,7 +39,7 @@ class OpenAIChatClient:
             return ("", "")
 
         template_short = """
-        Can you summarize this in one sentence
+        Can you summarize this in one sentence upto 10 words without markdown
         [Insert string here]
         """
 
