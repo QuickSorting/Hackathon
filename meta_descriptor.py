@@ -1,7 +1,11 @@
 from openai_client import OpenAIChatClient
 import json
 
-prompt = """You are an expert in analyzing software repositories. Below is a JSON representation of a dependency graph between classes in a Git repository. The JSON consists of:
+class MetaDescriptionGenerator:
+    def __init__(self, formatted_output, api_key):
+        chat_client = OpenAIChatClient(api_key)
+
+        prompt = """You are an expert in analyzing software repositories. Below is a JSON representation of a dependency graph between classes in a Git repository. The JSON consists of:
 
 Nodes: Representing classes, each with an id, label (class name), and additionalInfo (which contains a description of the class).
 Edges: Representing dependencies between classes, where source depends on target.
@@ -20,13 +24,13 @@ Edit
 
 Instructions:
 
-Give a brief summary of the repository's purpose - max 1 paragraph!"""
+Give a brief summary of the repository's purpose, not specifics, just textual overview - max 1 paragraph, max 80 words!"""
 
-class MetaDescriptionGenerator:
-    def __init__(self, formatted_output, api_key):
-        chat_client = OpenAIChatClient(api_key)
+        prompt = prompt.format(json.dumps(formatted_output, indent=2))
 
-        prompt = prompt.format(json.dumps(formatted_output, indent=2), formatted_output)
+        self.response = chat_client.get_completion(prompt)
 
-        chat_client.get_completion(prompt)
+    def save(self, filename):
+        with open(filename, 'w') as f:
+            f.write(self.response)
 

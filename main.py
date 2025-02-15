@@ -14,7 +14,6 @@ class Main:
         repo = RepoParser('./')
         classes = repo.construct_class_dependencies()
     
-        print(classes)
         diagram_parser = OutputReformatter(classes)
         formatted_output = diagram_parser.generate_structure()
         diagram_parser.save_to_json("formatted_output.json")

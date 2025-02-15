@@ -25,7 +25,7 @@ class OpenAIChatClient:
             return f"An error occurred: {str(e)}"
 
     def generate_class_description(self, source):
-        print(source)
+        # print(source)
         template = """
         You are an expert software engineer and technical writer. Below is the code for a class from a software repository written in Python. Please provide a detailed description of this class in the following format:
 

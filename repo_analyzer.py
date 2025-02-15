@@ -30,7 +30,7 @@ class RepoParser:
         for cls, deps in self.class_dependencies.items():
             classes[cls] = (client.generate_class_description(self.class_source_code[cls]), list(deps))
 
-        print(classes)
+        # print(classes)
         return classes
 
 
@@ -167,18 +167,18 @@ class DependencyVisitor(ast.NodeVisitor):
                 if self.current_class != callee_class:
                     self.dependencies[self.current_class].add(callee_class)
         elif isinstance(node.func, ast.Attribute) and isinstance(node.func.value, ast.Name):
-            print("here")
-            print(self.current_class)
+            # print("here")
+            # print(self.current_class)
             method_name = node.func.attr
-            print(method_name)
+            # print(method_name)
             # This part is tricky: we assume the instance might belong to a class that has methods mapped.
             # Here we would need more sophisticated analysis or assumptions about instance origins.
             if method_name in self.function_to_class:
-                print("here1")
+                # print("here1")
                 callee_class = self.function_to_class[method_name]
-                print(callee_class)
+                # print(callee_class)
                 if self.current_class and self.current_class != callee_class:
-                    print("here2")
+                    # print("here2")
                     self.dependencies[self.current_class].add(callee_class)
         self.generic_visit(node)
 
