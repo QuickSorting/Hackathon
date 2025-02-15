@@ -37,13 +37,11 @@ class RepoAnalyzer:
         """
         ignore_patterns = []
         try:
-            print(os.path.join(self.repo_path, '.gitignore'))
             with open(os.path.join(self.repo_path, '.gitignore'), 'r') as file:
                 for line in file:
                     line = line.strip()
                     if line and not line.startswith('#'):
                         ignore_patterns.append(line)
-                print(ignore_patterns)
         except FileNotFoundError:
             print(".gitignore not found, proceeding without ignore patterns.")
         return ignore_patterns
@@ -60,19 +58,6 @@ class RepoAnalyzer:
         if any(fnmatch.fnmatch(rel_path_root, pattern) for pattern in self.ignore_patterns):
             return True
 
-        # Additionally, handle directory-specific .gitignore rules (if applicable)
-        # This part is optional and depends on whether you have nested .gitignore files
-        current_dir = os.path.dirname(path)
-        while current_dir != self.repo_path:
-            gitignore_path = os.path.join(current_dir, '.gitignore')
-            if os.path.exists(gitignore_path):
-                with open(gitignore_path, 'r') as file:
-                    local_patterns = [line.strip() for line in file if line.strip() and not line.startswith('#')]
-                rel_path_local = os.path.relpath(path, current_dir)
-                if any(fnmatch.fnmatch(rel_path_local, pattern) for pattern in local_patterns):
-                    return True
-            current_dir = os.path.dirname(current_dir)
-
         return False
 
     def extract_classes(self, filepath):
@@ -81,7 +66,6 @@ class RepoAnalyzer:
         """
         with open(filepath, 'r', encoding='utf-8') as file:
             content = file.read()
-            print(filepath)
             tree = ast.parse(content, filename=filepath)
 
         classes = {}

@@ -24,6 +24,21 @@ class OpenAIChatClient:
         except Exception as e:
             return f"An error occurred: {str(e)}"
 
+    def generate_class_descriptions(self, class_definitions):
+        template = """
+        You are an expert software engineer and technical writer. Below is the code for a class from a software repository written in Python. Please provide a detailed description of this class that includes the following:
+
+        **Purpose:** What is the main responsibility of this class? (phrase this in a short single paragraph)
+
+        [Insert class code here]
+        """
+
+        for class_name, source_code in class_definitions.items():
+            # Replace placeholder with actual source code
+            prompt = template.replace("[Insert class code here]", source_code)
+            print(f"Prompt for class {class_name}:\n{prompt}\n")
+            print(self.get_completion(prompt))
+
 if __name__ == "__main__":
     file_path = './key'
     try:
@@ -36,16 +51,11 @@ if __name__ == "__main__":
     except IOError as e:
         raise IOError(f"An error occurred while reading the key file: {e}")
 
-    print(api_key)
     client = OpenAIChatClient(api_key=api_key)
 
     from repo_analyzer import RepoAnalyzer
     analyzer = RepoAnalyzer("./")
     analysis, class_definitions = analyzer.analyze_repository()
-    print(type(class_definitions))
-    print(class_definitions)
 
-    exit(0)
-    
-    user_input = "Write a haiku about recursion in programming."
-    print(client.get_completion(user_input))
+    client.generate_class_descriptions(class_definitions)
+
