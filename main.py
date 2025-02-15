@@ -5,22 +5,24 @@ from meta_descriptor import MetaDescriptionGenerator
 
 class Main:
     def main(self):
+        file_path = './key'
+        with open(file_path, 'r') as file:
+            api_key = file.read().strip()  # Read the key and strip any extra whitespace
+            if not api_key:
+                raise ValueError("API key is empty.")
+
         repo = RepoParser('./')
         classes = repo.construct_class_dependencies()
     
         print(classes)
         diagram_parser = OutputReformatter(classes)
-        diagram_parser.generate_structure()
+        formatted_output = diagram_parser.generate_structure()
         diagram_parser.save_to_json("formatted_output.json")
 
-        meta_description_generation = MetaDescriptionGenerator()
+        meta_description_generation = MetaDescriptionGenerator(formatted_output, api_key)
         meta_description_generation.save('meta_description.txt')
 
 if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print("Usage: python analyze_repo.py /path/to/repo")
-        sys.exit(1)
-
     Main().main()
 
 

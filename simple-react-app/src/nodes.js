@@ -1,17 +1,23 @@
 import dagre from 'dagre';
 
-export function generateFlowData(graph) {
+export function generateFlowData(graph, targetWidth = 150, targetHeight = 150, marginFactor = 0.9) {
   const { nodes, edges } = graph;
 
   const dagreGraph = new dagre.graphlib.Graph();
   dagreGraph.setDefaultEdgeLabel(() => ({}));
 
-  // Define node sizes (and optionally, edge sizes if needed)
-  const nodeWidth = 50;
+  // Define node dimensions.
+  const nodeWidth = 200;
   const nodeHeight = 20;
   
-  // Set graph options for dagre (you can tweak margins)
-  dagreGraph.setGraph({ rankdir: 'LR', marginx: 50, marginy: 50 });
+  // Set graph options for dagre:
+  dagreGraph.setGraph({
+    rankdir: 'TB',
+    marginx: 50,
+    marginy: 50,
+    nodesep: 40,  
+    ranksep: 10,  
+  });
 
   // Add nodes to dagre graph
   nodes.forEach((node) => {
@@ -23,10 +29,10 @@ export function generateFlowData(graph) {
     dagreGraph.setEdge(edge.source, edge.target);
   });
 
-  // Compute layout using dagre
+  // Run the dagre layout algorithm
   dagre.layout(dagreGraph);
 
-  // --- Compute bounding box of the computed layout ---
+  // Compute the bounding box of the layout
   const allPositions = nodes.map((node) => dagreGraph.node(node.id));
   const xs = allPositions.map(pos => pos.x);
   const ys = allPositions.map(pos => pos.y);
@@ -34,23 +40,28 @@ export function generateFlowData(graph) {
   const maxX = Math.max(...xs);
   const minY = Math.min(...ys);
   const maxY = Math.max(...ys);
+
+  console.log(minX, maxX, minY, maxY);
   
   const graphWidth = maxX - minX;
   const graphHeight = maxY - minY;
-  
-  // Set target dimensions (change these to fit your container/screen)
-  const targetWidth = 1000;
-  const targetHeight = 600 * 2;
-  
-  // Compute scale factor to fit the graph into target dimensions
-  const scale_x = targetWidth / graphWidth;
-  const scale_y = targetHeight / graphHeight;
-  
-  // Compute offsets to center the graph in the target container
-  const offsetX = (targetWidth - graphWidth * scale_x) / 2;
-  const offsetY = (targetHeight - graphHeight * scale_y) / 2;
 
-  // --- Generate nodes with scaled and offset positions ---
+  // Apply a margin factor
+  const effectiveWidth = targetWidth * marginFactor;
+  const effectiveHeight = targetHeight * marginFactor;
+  
+  // Compute scale factor to fit the graph
+  let scaleX = 1;
+  if (xs.length > 10) {
+    scaleX = 0.3;
+  }
+  let scaleY = 2;
+  if(xs.length > 10){
+    scaleY = 3;
+  }
+
+
+  // Generate nodes with scaled and offset positions
   const generatedNodes = nodes.map((node) => {
     const pos = dagreGraph.node(node.id);
     return {
@@ -64,8 +75,8 @@ export function generateFlowData(graph) {
         onContextMenu: node.onContextMenu,
       },
       position: {
-        x: (pos.x - minX) * scale_x + offsetX - nodeWidth / 2,
-        y: (pos.y - minY) * scale_y + offsetY - nodeHeight / 2,
+        x: (pos.x - minX) * scaleX  - nodeWidth / 2,
+        y: (pos.y - minY) * scaleY - nodeHeight / 2,
       },
       style: {
         opacity: node.hidden ? 0 : 1,
@@ -74,13 +85,28 @@ export function generateFlowData(graph) {
     };
   });
 
-  // --- Generate edges (no scaling needed for edges) ---
-  const generatedEdges = edges.map((edge) => ({
-    id: edge.id || `${edge.source}-${edge.target}`,
-    source: edge.source,
-    target: edge.target,
-    style: { opacity: 1, transition: 'opacity 0.5s ease' },
-  }));
+  // Create a lookup for generated nodes by id
+  const nodeLookup = generatedNodes.reduce((acc, node) => {
+    acc[node.id] = node;
+    return acc;
+  }, {});
+
+  // Generate edges with opacity based on connected nodes' hidden property
+  const generatedEdges = edges.map((edge) => {
+    const sourceNode = nodeLookup[edge.source];
+    const targetNode = nodeLookup[edge.target];
+    const edgeVisible =
+      sourceNode && targetNode && sourceNode.style.opacity === 1 && targetNode.style.opacity === 1;
+    return {
+      id: edge.id || `${edge.source}-${edge.target}`,
+      source: edge.source,
+      target: edge.target,
+      style: {
+        opacity: edgeVisible ? 1 : 0,
+        transition: 'opacity 0.5s ease',
+      },
+    };
+  });
 
   return { nodes: generatedNodes, edges: generatedEdges };
 }

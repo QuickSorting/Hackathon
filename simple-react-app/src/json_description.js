@@ -1,5 +1,4 @@
-// Your graph structure might look like this:
-export const graph = {
+const big_graph =  {
     "nodes": [
       {
         "id": "0",
@@ -1469,3 +1468,57 @@ export const graph = {
     ]
   };
   
+const small_graph = {
+    "nodes": [
+        {
+            "id": "1",
+            "label": "RepoParser",
+            "additionalInfo": "",
+            "hidden": false
+        },
+        {
+            "id": "2",
+            "label": "ClassFunctionVisitor",
+            "additionalInfo": "",
+            "hidden": false
+        },
+        {
+            "id": "3",
+            "label": "DependencyVisitor",
+            "additionalInfo": "",
+            "hidden": false
+        },
+        {
+            "id": "4",
+            "label": "OpenAIChatClient",
+            "additionalInfo": "",
+            "hidden": false
+        },
+        {
+            "id": "5",
+            "label": "Main",
+            "additionalInfo": "",
+            "hidden": false
+        },
+        {
+            "id": "6",
+            "label": "OutputReformatter",
+            "additionalInfo": "",
+            "hidden": false
+        }
+    ],
+    "edges": [
+        {
+            "id": "e1",
+            "source": "5",
+            "target": "1"
+        },
+        {
+            "id": "e2",
+            "source": "5",
+            "target": "6"
+        }
+    ]
+};
+
+export const graph = small_graph;

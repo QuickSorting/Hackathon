@@ -1,24 +1,34 @@
 import os
 import ast
+from openai_client import OpenAIChatClient
 
 class RepoParser:
     def __init__(self, repo_path):
         self.repo_path = os.path.abspath(repo_path)
         self.ignore_prefixes = self.load_gitignore_prefixes()
         self.function_to_class = {}  # Mapping: function/method name -> class name
+        self.class_source_code = {} 
         self.class_dependencies = {}  # Mapping: class name -> set of dependent class names
 
     def construct_class_dependencies(self):
+        file_path = './key'
+        try:
+            with open(file_path, 'r') as file:
+                api_key = file.read().strip()  # Read the key and strip any extra whitespace
+                if not api_key:
+                    raise ValueError("API key is empty.")
+        except FileNotFoundError:
+            raise FileNotFoundError(f"The key file '{file_path}' does not exist.")
+        except IOError as e:
+            raise IOError(f"An error occurred while reading the key file: {e}")
+
+        client = OpenAIChatClient(api_key=api_key)
+
         self.parse()
 
-        print("Function to Class Mapping:")
-        for func, cls in self.function_to_class.items():
-            print(f"{func} -> {cls}")
-
-        print("\nClass Dependencies:")
         classes = {}
         for cls, deps in self.class_dependencies.items():
-            classes[cls] = (("", list(deps)))
+            classes[cls] = (client.generate_class_description(self.class_source_code[cls]), list(deps))
 
         print(classes)
         return classes
@@ -70,8 +80,7 @@ class RepoParser:
         """
         # First scan: build function_to_class mapping.
         for filepath in self.get_py_files():
-            mapping = self.parse_functions(filepath)
-            self.function_to_class.update(mapping)
+            self.parse_functions(filepath)
 
         # Second scan: determine dependencies using the mapping.
         for filepath in self.get_py_files():
@@ -84,19 +93,17 @@ class RepoParser:
     def parse_functions(self, filepath):
         """
         First scan: parse file to map each function (method) name to its class.
-        Returns a dict: { function_name: class_name }
         """
-        mapping = {}
         try:
             with open(filepath, 'r', encoding='utf-8') as f:
                 content = f.read()
             tree = ast.parse(content, filename=filepath)
             visitor = ClassFunctionVisitor()
             visitor.visit(tree)
-            mapping = visitor.function_to_class
+            self.function_to_class.update(visitor.function_to_class)
+            self.class_source_code.update(visitor.class_source_code)
         except Exception as e:
             print(f"Error parsing functions in {filepath}: {e}")
-        return mapping
 
     def analyze_dependencies(self, filepath):
         """
@@ -123,9 +130,11 @@ class ClassFunctionVisitor(ast.NodeVisitor):
     """
     def __init__(self):
         self.function_to_class = {}
+        self.class_source_code = {}
 
     def visit_ClassDef(self, node):
         class_name = node.name
+        self.class_source_code[class_name] = ast.unparse(node)
         for item in node.body:
             if isinstance(item, ast.FunctionDef):
                 # Map the method name to the class
@@ -142,9 +151,11 @@ class DependencyVisitor(ast.NodeVisitor):
         self.function_to_class = function_to_class  # Mapping from first scan
         self.dependencies = {}  # { caller_class: set(dependent_classes) }
         self.current_class = None
+        self.current_class_source = None
 
     def visit_ClassDef(self, node):
         self.current_class = node.name
+        self.current_class_source = ast.unparse(node)
         self.dependencies.setdefault(self.current_class, set())
         self.generic_visit(node)
 
