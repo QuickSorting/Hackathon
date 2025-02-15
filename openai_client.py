@@ -43,6 +43,11 @@ class OpenAIChatClient:
 
         return class_descriptions
 
+def func():
+    from repo_analyzer import RepoAnalyzer
+    analyzer = RepoAnalyzer("./")
+    _, _ = analyzer.analyze_repository()
+
 if __name__ == "__main__":
     file_path = './key'
     try:
@@ -60,6 +65,9 @@ if __name__ == "__main__":
     from repo_analyzer import RepoAnalyzer
     analyzer = RepoAnalyzer("./")
     analysis, class_definitions = analyzer.analyze_repository()
+
+    print(analysis)
+    exit(0)
 
     class_descriptions = client.generate_class_descriptions(class_definitions)
     print(class_descriptions)
