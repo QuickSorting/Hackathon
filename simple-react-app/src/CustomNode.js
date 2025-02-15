@@ -23,12 +23,15 @@ export default function CustomNode({ data }) {
     >
       <Box
         onContextMenu={handleRightClick}
-        p={2}
+        p={1}
         bg="white"
         border="1px solid #ddd"
         borderRadius="md"
         boxShadow="sm"
         position="relative"
+        // width="80px"               // Fixed width
+        // height="50px"              // Fixed height
+        fontSize="15px"
       >
         {data.label}
         {/* Add handles so edges can connect */}
@@ -36,13 +39,13 @@ export default function CustomNode({ data }) {
           type="target"
           position={Position.Top}
           id="target"
-          style={{ background: '#555', width: 4, height: 4 }}
+          style={{ background: '#555', width: 5, height: 5 }}
         />
         <Handle
           type="source"
           position={Position.Bottom}
           id="source"
-          style={{ background: '#555', width: 4, height: 4 }}
+          style={{ background: '#555', width: 0.1, height: 0.1 }}
         />
       </Box>
     </Tooltip>

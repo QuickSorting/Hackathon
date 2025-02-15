@@ -117,7 +117,7 @@ export default function Diagram() {
 
 
   return (
-    <div style={{ height: 1000 }}>
+    <div style={{ height: 500 }}>
       <ReactFlow
         nodes={enhancedNodes}
         edges={edges}
