@@ -1,6 +1,6 @@
 import sys
 from flask import Flask, render_template_string
-from analyze_repo import analyze_repository, generate_mermaid
+from repo_analyzer import RepoAnalyzer
 
 app = Flask(__name__)
 diagram = ""
@@ -71,7 +71,7 @@ HTML_TEMPLATE = '''
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body" id="modalBody">
-          <!-- Details injected on node click -->
+          <!-- Details injected on noegenerate_mermaide click -->
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -97,9 +97,10 @@ if __name__ == '__main__':
         sys.exit(1)
 
     repo_path = sys.argv[1]
+    analyzer = RepoAnalyzer(repo_path)
 
-    analysis = analyze_repository(repo_path)
-    diagram = generate_mermaid(analysis)
+    analysis = analyzer.analyze_repository()
+    diagram = analyzer.generate_mermaid(analysis)
 
     print(diagram)
 
