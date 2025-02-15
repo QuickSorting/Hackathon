@@ -25,7 +25,18 @@ class OpenAIChatClient:
             return f"An error occurred: {str(e)}"
 
 if __name__ == "__main__":
-    api_key = "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"
+    file_path = './key'
+    try:
+        with open(file_path, 'r') as file:
+            api_key = file.read().strip()  # Read the key and strip any extra whitespace
+            if not api_key:
+                raise ValueError("API key is empty.")
+    except FileNotFoundError:
+        raise FileNotFoundError(f"The key file '{file_path}' does not exist.")
+    except IOError as e:
+        raise IOError(f"An error occurred while reading the key file: {e}")
+
+    print(api_key)
     client = OpenAIChatClient(api_key=api_key)
 
     from repo_analyzer import RepoAnalyzer
